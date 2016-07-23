@@ -61,9 +61,22 @@ router.delete("/:qID/answers/:aID", function(request, response){
 
 // POST /questions/:qID/answers/:aID/vote-up
 // POST /questions/:qID/answers/:aID/vote-down
-router.post("/:qID/answers/:aID/vote-:direction", function(request, response){
-  // vote answer up or down
-  response.json(
+router.post("/:qID/answers/:aID/vote-:direction",
+  function(request, response, next){
+    if(request.params.direction.search(/^(up|down)$/) === -1 )
+    {
+      var error = new Error("Not Found");
+      error.status = 404;
+      next(error);
+    }
+    else
+    {
+      next();
+    }
+  },
+  function(request, response){
+    // vote answer up or down
+    response.json(
     {
       response:"You asked for POST to /vote-" + request.params.direction, 
       questionID: request.params.qID,
