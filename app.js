@@ -2,15 +2,14 @@
 
 var express = require("express");
 var app = express();
+var routes = require("./routes");
 
-app.use(function(request, response, next){
-  //console.log("the leaves are ", request.query.colour);
-  next();
-});
+var jsonParser = require("body-parser").json;
+
+app.use(jsonParser());
+app.use("/questions",routes);
 
 var port = process.env.PORT || 3000;
-
-
 
 app.listen(port, function(){
   console.log("express server is listening on port " + port);
