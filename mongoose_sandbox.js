@@ -8,11 +8,42 @@ db.on("error", function(err){
   console.log("connection error!", err)
 });
 
-db.once("open", function()
-{
-  console.log("connected to db");
 
-  //all db code
+function logClose(){
+  console.log("db connnection closed");
+}
+
+function closeDb(error){    
+  db.close(logClose);
+}
+
+function checkSaveError(error){
+  if(error){
+    console.log("Save Failed", error)
+  }
+  else{
+    console.log("Saved");
+  };
+}
+
+//{elephant : this.elephant}
+function animalSave(error){  
+    checkSaveError(error); 
+    this.elephant.save(checkErrorAndCloseDb);
+}
+
+function checkErrorAndCloseDb(error){  
+    checkSaveError(error);    
+    closeDb();
+}
+
+//{animal: animal, elephant: elephant}
+function saveAllChanges(){
+  var params = {elephant : this.elephant};
+  this.animal.save(animalSave.bind(params));
+}
+
+function createAnimalSchema(){
   var Schema = mongoose.Schema;
   var AnimalSchema = new Schema
   ({
@@ -23,7 +54,13 @@ db.once("open", function()
     name:   {type: String, default: "Finn"}
   });
 
-  var Animal = mongoose.model("Animal", AnimalSchema);
+  return mongoose.model("Animal", AnimalSchema);
+}
+
+
+function mainCode(){
+  console.log("connected to db");
+  var Animal = createAnimalSchema();
 
   var elephant = new Animal
   ({
@@ -37,25 +74,9 @@ db.once("open", function()
   var animal = new Animal ({}); //goldfish
 
   // delete all animals before we start
-  Animal.remove({});
+  var params = {animal: animal, elephant: elephant};
+  Animal.remove({}, saveAllChanges.bind(params));
+}
 
-  // but it gets horribly arsy what has to happen next...
-  // with loads of nested callbacks - so I would
-  // totally go named functions at this point.
-
-  elephant.save(function(error)
-  {
-    if(error){
-      console.log("Error")
-    }
-    else{
-      console.log("Saved");
-    }
-
-    db.close(function(){
-      console.log("db connnection closed");
-    });
-  
-  });
-
-});
+//all db code
+db.once("open", mainCode); 
