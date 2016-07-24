@@ -31,27 +31,6 @@ function checkErrorAndCloseDb(error){
     closeDb();
 }
 
-// Recursively saves all items in the array passed in as "items".
-// Bind params: {items: []} 
-//              {items: [], first:true}  to stop the error 
-//              check the first time round).
-function arraySave(error){
-  // really shouldn't do this the first time...  
-    if(!this.first){
-      checkSaveError(error); 
-    }
-
-    if(this.items.length > 1 ){
-      var currItem = this.items.shift();
-      var params = {items: this.items};
-      currItem.save(arraySave.bind(params));
-    }
-    else{
-      // last item
-      var currItem = this.items.shift();
-      currItem.save(checkErrorAndCloseDb);
-    };    
-}
 //=======================================================
 
 function createAnimalSchema(){
@@ -59,7 +38,6 @@ function createAnimalSchema(){
   var AnimalSchema = new Schema
   ({
     type:   {type: String, default: "goldfish"},
-    size:   {type: String, default: "small"},
     colour: {type: String, default: "orange"},
     mass:   {type: Number, default: "0.005"},
     name:   {type: String, default: "Finn"}
@@ -75,32 +53,19 @@ function mainCode(){
   var elephant = new Animal
   ({
       type: "elephant",
-      size: "big",
       colour: "grey",
       mass: 6000,
       name: "Lawrence"
   });
 
   var animal = new Animal ({}); //goldfish
+
+
+  
   var params = {items: [animal, elephant], first: true};
   
   // remove all existing and then save all changes
   Animal.remove({}, arraySave.bind(params));
-  //Animal.remove({}, checkErrorAndCloseDb());
-
-
-  // Animal.remove({}, function(err) 
-  // {
-	// 	if (err) console.error(err);
-
-  //   db.close(function()
-  //   {
-  //     console.log("db connection closed");
-  //   });
-
-  // });
-
-
 }
 
 //all db code
