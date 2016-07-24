@@ -4,20 +4,24 @@ mongoose.connect("mongodb://localhost:27017/sandbox");
 var db = mongoose.connection;
 console.log("connected to db");
 
-db.on("error", function(err){
+db.on("error", function(err)
+{
   console.log("connection error!", err)
 });
 
 //=========== general mongoose save code ==========
-function logClose(){
+function logClose()
+{
   console.log("db connnection closed");
 }
 
-function closeDb(error){    
+function closeDb(error)
+{    
   db.close(logClose);
 }
 
-function checkSaveError(error){
+function checkSaveError(error)
+{
   if(error){
     console.log("Save Failed", error)
   }
@@ -26,21 +30,39 @@ function checkSaveError(error){
   };
 }
 
-function checkErrorAndCloseDb(error){  
+function checkErrorAndCloseDb(error)
+{  
     checkSaveError(error);    
     closeDb();
 }
 
 //=======================================================
+//{item: this}
+function calculateSize(next)
+{
+	if(this.mass >= 100) {
+			this.size = "big";
+		} else if (this.mass >= 5 && this.mass < 100) {
+			this.size = "medium";
+		} else {
+			this.size = "small";
+		};
+    
+		next();
+}
 
-function createAnimalSchema(Schema){
+function createAnimalSchema(Schema)
+{
   var AnimalSchema = new Schema
   ({
     type:   {type: String, default: "goldfish"},
+    size: String,
     colour: {type: String, default: "orange"},
     mass:   {type: Number, default: "0.005"},
     name:   {type: String, default: "Finn"}
   });
+
+	AnimalSchema.pre("save", calculateSize);
 
   return mongoose.model("Animal", AnimalSchema);
 }
@@ -66,19 +88,19 @@ function createAnimalData(Animal)
   return [
 		{
 			type: "mouse",
-			color: "gray",
+			colour: "gray",
 			mass: 0.035,
 			name: "Marvin"
 		},
 		{
 			type: "nutria",
-			color: "brown",
+			colour: "brown",
 			mass: 6.35,
 			name: "Gretchen"
 		},
 		{
 			type: "wolf",
-			color: "gray",
+			colour: "gray",
 			mass: 45,
 			name: "Iris"
 		},
@@ -89,15 +111,15 @@ function createAnimalData(Animal)
 
 }
 
-function logAnimal(animal){
-  console.log(animal.name + " the " + animal.color + 
+function logAnimal(animal)
+{
+  console.log(animal.name + " the " + animal.colour + 
     " " + animal.type + " is a " + animal.size + "-sized animal.");
 }
 
 
 function animalsFound(error,animals)
 {
-  console.log(animals);
   animals.forEach(logAnimal);
   closeDb();
 }
@@ -122,15 +144,14 @@ function saveAnimals(error)
       animalsCreated.bind({Animal: this.Animal}));
 }
 
-function mainCode(){
-  
+function mainCode()
+{
   var Schema = mongoose.Schema;
   var Animal = createAnimalSchema(Schema);
   var animalData = createAnimalData(Animal);
 
   // remove all existing and then save all changes
 	Animal.remove({},saveAnimals.bind({Animal: Animal, animalData: animalData}));
-
 }
 
 //all db code
