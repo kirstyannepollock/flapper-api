@@ -89,16 +89,29 @@ function createAnimalData(Animal)
 
 }
 
+function logAnimal(animal){
+  console.log(animal.name + " the " + animal.color + 
+    " " + animal.type + " is a " + animal.size + "-sized animal.");
+}
+
+//{Animal: Animal}
+function animalsCreated(error, animals)
+{
+  checkSaveError(error);
+  console.log("created");
+
+  this.Animal.find({}, function(error,animals){
+    animals.forEach(logAnimal)
+  });
+  
+  closeDb();
+}
+
 //{Animal: Animal}
 function saveAnimals(error, animals)
 {
     this.Animal.create(this.animalData, 
-    function(error, animals)
-    {
-      checkSaveError(error);
-      console.log("created");
-      closeDb();
-    });
+      animalsCreated.bind({Animal: this.Animal}));
 }
 
 function mainCode(){
