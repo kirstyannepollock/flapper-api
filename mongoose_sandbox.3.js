@@ -94,22 +94,30 @@ function logAnimal(animal){
     " " + animal.type + " is a " + animal.size + "-sized animal.");
 }
 
+
+function animalsFound(error,animals)
+{
+  console.log(animals);
+  animals.forEach(logAnimal);
+  closeDb();
+}
+
+
 //{Animal: Animal}
 function animalsCreated(error, animals)
 {
   checkSaveError(error);
   console.log("created");
 
-  this.Animal.find({}, function(error,animals){
-    animals.forEach(logAnimal)
-  });
-  
-  closeDb();
+  this.Animal.find({}, animalsFound);
 }
 
-//{Animal: Animal}
-function saveAnimals(error, animals)
+
+
+//{Animal: Animal, animalData: animalData}}
+function saveAnimals(error)
 {
+    checkSaveError(error);
     this.Animal.create(this.animalData, 
       animalsCreated.bind({Animal: this.Animal}));
 }
@@ -121,7 +129,8 @@ function mainCode(){
   var animalData = createAnimalData(Animal);
 
   // remove all existing and then save all changes
-  Animal.remove({},	saveAnimals.bind({Animal: Animal, animalData: animalData}));
+	Animal.remove({},saveAnimals.bind({Animal: Animal, animalData: animalData}));
+
 }
 
 //all db code

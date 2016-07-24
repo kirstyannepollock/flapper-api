@@ -85,16 +85,23 @@ db.once("open", function(){
 		whale
 	];
 
-	Animal.remove({}, function(err) 
-  {
+	Animal.remove({}, function(err) {
 		if (err) console.error(err);
-					db.close(function()
-          {
+		Animal.create(animalData, function(err, animals){
+			if (err) console.error(err);
+			Animal.find({},function(err, animals){
+				animals.forEach(function(animal){
+						console.log(animal.name + " the " + animal.color + 
+							" " + animal.type + " is a " + animal.size + "-sized animal.");
+					});
+					db.close(function(){
 						console.log("db connection closed");
 					});
+
 				});
 			});
-
+		});
+	});
 
 
 
