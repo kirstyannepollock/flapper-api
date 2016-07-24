@@ -26,21 +26,30 @@ function checkSaveError(error){
   };
 }
 
-//{elephant : this.elephant}
-function animalSave(error){  
-    checkSaveError(error); 
-    this.elephant.save(checkErrorAndCloseDb);
+
+//{items: []}
+function arraySave(error){  
+    checkSaveError(error);
+    
+    // Have to do this to treat like an array
+    var itemArray = this.items;
+
+    if(itemArray.length > 1 ){
+      var currItem = itemArray.shift();
+      var params = {items: itemArray};
+      currItem.save(arraySave.bind(params));
+
+    }
+    else{
+      // last item
+      var currItem = itemArray.shift();
+      currItem.save(checkErrorAndCloseDb);
+    };    
 }
 
 function checkErrorAndCloseDb(error){  
     checkSaveError(error);    
     closeDb();
-}
-
-//{animal: animal, elephant: elephant}
-function saveAllChanges(){
-  var params = {elephant : this.elephant};
-  this.animal.save(animalSave.bind(params));
 }
 
 function createAnimalSchema(){
@@ -72,10 +81,10 @@ function mainCode(){
   });
 
   var animal = new Animal ({}); //goldfish
-
-  // delete all animals before we start
-  var params = {animal: animal, elephant: elephant};
-  Animal.remove({}, saveAllChanges.bind(params));
+  var params = {items: [animal, elephant]};
+  
+  // remove all existing and then save all changes
+  Animal.remove({}, arraySave.bind(params));
 }
 
 //all db code
