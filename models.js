@@ -9,16 +9,16 @@ var Schema = mongoose.Schema;
 var AnswerSchema = new Schema(
   {
     text: string,
-    createdAt: {type:Date, default: Date.now},
-    updatedAt: {type:Date, default: Date.now},
-    votes:     {type:Number, default: 0}    
+    createdAt: {type: Date, default: Date.now},
+    updatedAt: {type: Date, default: Date.now},
+    votes:     {type: Number, default: 0}    
   }
 );
 
 var QuestionSchema = new Schema(
   {
     text: string,
-    createdAt: {type:Date, default: Date.now},
+    createdAt: {type: Date, default: Date.now},
     answers: [AnswerSchema]
   }
 );
