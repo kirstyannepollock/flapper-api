@@ -2,7 +2,7 @@
 var mongoose = require("mongoose");
 mongoose.connect("mongodb://localhost:27017/sandbox");
 var db = mongoose.connection;
-console.log("connected to db");
+
 
 db.on("error", function(err)
 {
@@ -172,6 +172,8 @@ function saveAnimals(error)
 
 function mainCode()
 {
+  console.log("connected to db");
+  
   var Schema = mongoose.Schema;
   var Animal = createAnimalSchema(Schema);
   var animalData = createAnimalData(Animal);

@@ -7,11 +7,31 @@ var routes = require("./routes");
 var jsonParser = require("body-parser").json;
 var logger = require("morgan");
 
+//================= db functions ================
+function dbCode()
+{
+  console.log("connected to db");
+}
+//===============================================
+
 //Logger
 app.use(logger("dev"));
 
 //JSON parsing
 app.use(jsonParser());
+
+//Mongoose
+var mongoose = require("mongoose");
+mongoose.connect("mongodb://localhost:27017/sandbox");
+var db = mongoose.connection;
+
+db.on("error", function(err)
+{
+  console.log("connection error!", err)
+});
+
+//all db code
+db.once("open", dbCode); 
 
 //router
 app.use("/questions",routes);
