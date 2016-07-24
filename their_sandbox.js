@@ -89,19 +89,22 @@ db.once("open", function(){
 		if (err) console.error(err);
 		Animal.create(animalData, function(err, animals){
 			if (err) console.error(err);
-			Animal.find({},function(err, animals){
-				animals.forEach(function(animal){
+			Animal.findOne({type: "elephant"}, function(err, elephant) {
+				elephant.findSameColor(function(err, animals){
+					if (err) console.error(err);
+					animals.forEach(function(animal){
 						console.log(animal.name + " the " + animal.color + 
 							" " + animal.type + " is a " + animal.size + "-sized animal.");
 					});
 					db.close(function(){
 						console.log("db connection closed");
 					});
-
 				});
 			});
 		});
 	});
+});
+
 
 
 

@@ -20,6 +20,13 @@ function closeDb(error)
   db.close(logClose);
 }
 
+function checkError(error)
+{
+  if(error){
+    console.error(error);
+  }
+}
+
 function checkSaveError(error)
 {
   if(error){
@@ -66,9 +73,16 @@ function createAnimalSchema(Schema)
 
   AnimalSchema.statics.findSize = function(size,callback)
   {
-    //this = model = Animal
+    //  this == model == Animal ("table")
     return this.find({size: size}, callback);
   }
+
+  AnimalSchema.methods.findSameColour = function (callback)
+  {
+      //  this == document ("record")
+      //  this.model()"Animal") ==  Animal ("table")
+      return this.model("Animal").find({colour: this.colour}, callback);
+  };
 
   return mongoose.model("Animal", AnimalSchema);
 }
@@ -94,7 +108,7 @@ function createAnimalData(Animal)
   return [
 		{
 			type: "mouse",
-			colour: "gray",
+			colour: "grey",
 			mass: 0.035,
 			name: "Marvin"
 		},
@@ -106,7 +120,7 @@ function createAnimalData(Animal)
 		},
 		{
 			type: "wolf",
-			colour: "gray",
+			colour: "grey",
 			mass: 45,
 			name: "Iris"
 		},
@@ -125,19 +139,25 @@ function logAnimal(animal)
 
 
 function animalsFound(error,animals)
-{
+{ 
+  checkError(error);
   animals.forEach(logAnimal);
   closeDb();
 }
 
+function animalFound(error,animal)
+{
+  checkError(error);
+  animal.findSameColour(animalsFound);
+}
 
 //{Animal: Animal}
 function animalsCreated(error, animals)
 {
-  checkSaveError(error);
-  console.log("created");
+  checkError(error);
+  console.log("animals created");
 
-  this.Animal.findSize("medium",animalsFound);
+  this.Animal.findOne({type: "elephant"}, animalFound);
 }
 
 
@@ -145,7 +165,7 @@ function animalsCreated(error, animals)
 //{Animal: Animal, animalData: animalData}}
 function saveAnimals(error)
 {
-    checkSaveError(error);
+    checkError(error);
     this.Animal.create(this.animalData, 
       animalsCreated.bind({Animal: this.Animal}));
 }
