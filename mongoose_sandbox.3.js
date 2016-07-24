@@ -47,7 +47,7 @@ function calculateSize(next)
 		} else {
 			this.size = "small";
 		};
-    
+
 		next();
 }
 
@@ -63,6 +63,12 @@ function createAnimalSchema(Schema)
   });
 
 	AnimalSchema.pre("save", calculateSize);
+
+  AnimalSchema.statics.findSize = function(size,callback)
+  {
+    //this = model = Animal
+    return this.find({size: size}, callback);
+  }
 
   return mongoose.model("Animal", AnimalSchema);
 }
@@ -131,7 +137,7 @@ function animalsCreated(error, animals)
   checkSaveError(error);
   console.log("created");
 
-  this.Animal.find({}, animalsFound);
+  this.Animal.findSize("medium",animalsFound);
 }
 
 
