@@ -32,8 +32,9 @@ function checkErrorAndCloseDb(error){
 }
 
 // Recursively saves all items in the array passed in as "items".
-// Bind params: {items: []} (optionally a first:true param 
-// to stop the error check the first time round).
+// Bind params: {items: []} 
+//              {items: [], first:true}  to stop the error 
+//              check the first time round).
 function arraySave(error){
   // really shouldn't do this the first time...  
     if(!this.first){
@@ -66,7 +67,6 @@ function createAnimalSchema(){
 
   return mongoose.model("Animal", AnimalSchema);
 }
-
 
 function mainCode(){
   console.log("connected to db");
