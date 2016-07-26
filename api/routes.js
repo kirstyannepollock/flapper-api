@@ -11,14 +11,14 @@ var decendingCreatedDate = {createdAt: -1};
 //{request: request, response: response, next: <callback>}
 function afterSaveQuestion(error, question)
 {
-  if (error) { return this.next(err); }
+  if (error) { return this.next(error); }
   this.response.status(201); //updated
   this.response.json(question);
 }
 
 function New404Error() 
 {  
-  error = new Error("Not Found");
+  var error = new Error("Not Found");
   error.status(404);
   return error;
 }
@@ -30,7 +30,7 @@ router.param("qID", function(request, response, next, id)
 {
   Question.findById(id, function (error, question)
   {
-    if (error) { return next(err); }
+    if (error) { return next(error); }
     if (!question) { return next(New404Error); }
 
     // Why *return* next ...
@@ -68,13 +68,13 @@ router.get("/", function(request, response, next)
     .sort(decendingCreatedDate)
     .exec(function(error, questions)
     {
-      if (error) { return next(err); }
+      if (error) { return next(error); }
       response.json(questions);
     });
 });
 
 // GET /questions/4
-router.get("/:qID", function(request, response, next)
+router.get("/:qID", function(request, response)
 {
   //question is in the request (pre-loaded because of the qID param)
   response.json(request.question);
@@ -106,8 +106,8 @@ router.put("/:qID/answers/:aID", function(request, response, next)
   // update an answer (pre-loaded because of the aID param)
   request.answer.update(request.body, function (error, result) 
   {
-      if (error) { return next(error); }
-      response.json(result);
+    if (error) { return next(error); }
+    response.json(result);
   });
 
   ///??? we haven't saved the question ????
@@ -120,7 +120,7 @@ router.delete("/:qID/answers/:aID", function(request, response, next)
   // delete an answer
   request.answer.remove(function (error, answer) 
   {
-     request.question.save(afterSaveQuestion.bind({request: request, response: response, next: next}));
+    request.question.save(afterSaveQuestion.bind({request: request, response: response, next: next}));
   });
 
 });
@@ -143,7 +143,7 @@ router.post("/:qID/answers/:aID/vote-:direction",
   },
   function(request, response, next)
   {
-    request.answer.vote(request.vote, afterSaveQuestion.bind({request: request, response: response, next: next}) )
+    request.answer.vote(request.vote, afterSaveQuestion.bind({request: request, response: response, next: next}) );
   });
 
 

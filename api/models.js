@@ -35,7 +35,7 @@ AnswerSchema.methods.update = function(updates,callback)
 {
   // merge answers into Question document
   // this === Answers
-  Object.assign(this, updates, {updatedAt: new Date() })
+  Object.assign(this, updates, {updatedAt: new Date() });
 
   //save the changes (need to save the parent)
   this.parent().save(callback);

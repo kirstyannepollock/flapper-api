@@ -14,7 +14,7 @@ var routes = require("./routes");
 //================= functions ================
 function dbCode()
 {
-  console.log("connected to db");
+  //console.log("connected to db");
 }
 
 function accessControl(request, response, next)
@@ -28,7 +28,7 @@ function accessControl(request, response, next)
     return response.status(200).json({});
   };
 
-  next();
+  next(); //comment
 }
 
 //===============================================
@@ -46,7 +46,7 @@ var db = mongoose.connection;
 
 db.on("error", function(err)
 {
-  console.log("connection error!", err)
+  console.log("connection error!", err);
 });
 
 //all db code
@@ -68,10 +68,10 @@ app.use(function(request, response, next)
 });
 
 //error handler
-app.use(function(err,request, response, next)
+app.use(function(err,request, response)
 {
   response.status(err.status || 500);
-  response.json({ error: { message: err.message } })
+  response.json({ error: { message: err.message } });
 });
 
 var port = process.env.PORT || 3000;
