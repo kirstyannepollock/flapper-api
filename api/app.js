@@ -11,11 +11,26 @@ var app = express();
 var routes = require("./routes");
 //===============================================
 
-//================= db functions ================
+//================= functions ================
 function dbCode()
 {
   console.log("connected to db");
 }
+
+function accessControl(request, response, next)
+{
+  response.header("Access-Control-Allow-Origin","*");
+  response.header("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
+
+  if (request.method === "OPTIONS")
+  {
+    response.header("Access-Control-Allow-Methods", "PUT,POST,DELETE");
+    return response.status(200).json({});
+  };
+
+  next();
+}
+
 //===============================================
 
 //Logger
@@ -38,30 +53,31 @@ db.on("error", function(err)
 db.once("open", dbCode); 
 
 //CORS
-app.use(function (request, result, next)
-{
-  response.header("Access-Control-Allow-Origin","*");
-  response.header("Access-Control-Allow-Headers","Origin, X-Requested_With, Content-Type, Accept");
-});
+app.use(accessControl);
 
+// routes
 app.use("/questions",routes);
 
-// catch 404 and forward
-app.use(function(request, response, next){
+// catch 404 and forward - ** TODO, we have new404Error in routes
+// shd bring it out common...
+app.use(function(request, response, next)
+{
   var err = new Error("Not Found");
   err.status = 404;
   next(err);
 });
 
 //error handler
-app.use(function(err,request, response, next){
+app.use(function(err,request, response, next)
+{
   response.status(err.status || 500);
   response.json({ error: { message: err.message } })
 });
 
 var port = process.env.PORT || 3000;
 
-app.listen(port, function(){
+app.listen(port, function()
+{
   console.log("express server is listening on port " + port);
 });
 
