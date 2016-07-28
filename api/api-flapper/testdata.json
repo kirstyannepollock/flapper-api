@@ -1,0 +1,17 @@
+ [
+    {
+      "title": "post 1", 
+      "link": "www.link1.com", 
+      "upvotes": 5,
+      "comments": [
+        { "author": "Joe", "body": "Cool post!", "upvotes": 0 },
+        { "author": "Bob", "body": "Great idea but everything is wrong!", "upvotes": 0 }
+      ]
+    },
+   {
+      "title":  "post 2", 
+      "link": "www.link2.com", 
+      "upvotes": 5,
+      "comments": [] 
+   }
+  ]
