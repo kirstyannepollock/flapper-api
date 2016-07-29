@@ -15,6 +15,18 @@ function afterSavePost(error, post)
   this.response.json(post);
 }
 
+//{request: request, response: response, next: <callback>}
+function afterSaveComment(error, post)
+{
+  if (error) { return this.next(error); }
+  this.response.status(201); //updated
+
+  // mark the newly added comment as new and return it
+  this.request.comment.isNew;
+  this.response.json(this.request.comment);
+}
+
+
 function New404Error() 
 {  
   var error = new Error("Not Found");
@@ -86,14 +98,20 @@ router.post("/:pID/comments", function(request, response, next)
   //post is in the request (pre-loaded because of the pID param)
   // *Add* comments
   request.post.comments.push(request.body);
-  request.post.save(afterSavePost.bind({request: request, response: response, next: next}));
+
+  //_id is already added, and everything else is private to
+  // the request, so I reckon this is safe.
+  var comment = request.post.comments[0];
+  request.comment = comment;
+  request.post.save(afterSaveComment.bind({request: request, response: response, next: next}));
+  
 });
 
 
-// PUT /posts/:pID/comments/:aID
-router.put("/:pID/comments/:aID", function(request, response, next)
+// PUT /posts/:pID/comments/:cID
+router.put("/:pID/comments/:cID", function(request, response, next)
 {
-  // update an comment (pre-loaded because of the aID param)
+  // update an comment (pre-loaded because of the cID param)
   request.comment.update(request.body, function (error, result) 
   {
     if (error) { return next(error); }
@@ -104,8 +122,8 @@ router.put("/:pID/comments/:aID", function(request, response, next)
 
 });
 
-// DELETE /posts/:pID/comments/:aID
-router.delete("/:pID/comments/:aID", function(request, response, next)
+// DELETE /posts/:pID/comments/:cID
+router.delete("/:pID/comments/:cID", function(request, response, next)
 {
   // delete an comment
   request.comment.remove(function (error, comment) 
@@ -132,29 +150,29 @@ router.post("/:pID/vote-:direction",
   },
   function(request, response, next)
   {
-    //have forgotten why this is just "request" and not "request.post" ...
     request.post.vote(request.voteDirection, afterSavePost.bind({request: request, response: response, next: next}) );
   });
 
-// // POST /posts/:pID/comments/:aID/vote-up
-// // POST /posts/:pID/comments/:aID/vote-down
-// router.post("/:pID/comments/:aID/vote-:direction",
-//   function(request, response, next)
-//   {
-//     if(request.params.direction.search(/^(up|down)$/) === -1 )
-//     {
-//       next(New404Error);
-//     }
-//     else
-//     {
-//       request.voteDirection = request.params.direction;
-//       next();
-//     }
-//   },
-//   function(request, response, next)
-//   {
-//     request.comment.vote(request.voteDirection, afterSavePost.bind({request: request, response: response, next: next}) );
-//   });
+// POST /posts/:pID/comments/:cID/vote-up
+// POST /posts/:pID/comments/:cID/vote-down
+router.post("/:pID/comments/:cID/vote-:direction",
+  function(request, response, next)
+  {
+    if(request.params.direction.search(/^(up|down)$/) === -1 )
+    {
+      next(New404Error);
+    }
+    else
+    {
+      request.voteDirection = request.params.direction;
+      next();
+    }
+  },
+  function(request, response, next)
+  {
+    //comment is pre-loaded because of teh cID parameter
+    request.comment.vote(request.voteDirection, afterSavePost.bind({request: request, response: response, next: next}) );
+  });
 
 
 
