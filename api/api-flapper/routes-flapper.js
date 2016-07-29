@@ -115,10 +115,9 @@ router.delete("/:pID/comments/:aID", function(request, response, next)
 
 });
 
-
-// POST /posts/:pID/comments/:aID/vote-up
-// POST /posts/:pID/comments/:aID/vote-down
-router.post("/:pID/comments/:aID/vote-:direction",
+//POST /posts/:pID/vote-up
+// POST /posts/:pID/vote-down
+router.post("/:pID/vote-:direction",
   function(request, response, next)
   {
     if(request.params.direction.search(/^(up|down)$/) === -1 )
@@ -127,14 +126,35 @@ router.post("/:pID/comments/:aID/vote-:direction",
     }
     else
     {
-      request.vote = request.params.direction;
+      request.voteDirection = request.params.direction;
       next();
     }
   },
   function(request, response, next)
   {
-    request.comment.vote(request.vote, afterSavePost.bind({request: request, response: response, next: next}) );
+    //have forgotten why this is just "request" and not "request.post" ...
+    request.post.vote(request.voteDirection, afterSavePost.bind({request: request, response: response, next: next}) );
   });
+
+// // POST /posts/:pID/comments/:aID/vote-up
+// // POST /posts/:pID/comments/:aID/vote-down
+// router.post("/:pID/comments/:aID/vote-:direction",
+//   function(request, response, next)
+//   {
+//     if(request.params.direction.search(/^(up|down)$/) === -1 )
+//     {
+//       next(New404Error);
+//     }
+//     else
+//     {
+//       request.voteDirection = request.params.direction;
+//       next();
+//     }
+//   },
+//   function(request, response, next)
+//   {
+//     request.comment.vote(request.voteDirection, afterSavePost.bind({request: request, response: response, next: next}) );
+//   });
 
 
 

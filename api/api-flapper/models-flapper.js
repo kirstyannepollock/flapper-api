@@ -24,13 +24,14 @@ CommentSchema.methods.update = function(updates,callback)
   this.parent().save(callback);
 };
 
-CommentSchema.method("vote", function (vote, callback)
+CommentSchema.method("vote", function (voteDirection, callback)
 {
-  this.votes = vote =="up" ? this.votes + 1 : this.votes -1;
+  this.upvotes = voteDirection =="up" ? this.upvotes + 1 : this.upvotes -1;
 
   //save the changes (need to save the parent)
   this.parent().save(callback);
 });
+
 
 var PostSchema = new Schema(
   {
@@ -40,6 +41,15 @@ var PostSchema = new Schema(
     comments: [CommentSchema]
   }
 );
+
+
+PostSchema.method("vote", function (voteDirection, callback)
+{
+  this.upvotes = voteDirection =="up" ? this.upvotes + 1 : this.upvotes -1;
+
+  //save the changes 
+  this.save(callback);
+});
 
 var Post = mongoose.model("Post", PostSchema);
 
