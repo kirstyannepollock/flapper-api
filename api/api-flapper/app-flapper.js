@@ -1,4 +1,6 @@
 'use strict';
+// next up - authorisation using Passport
+// http://scottksmith.com/blog/2014/05/29/beer-locker-building-a-restful-api-with-node-passport/ 
 
 //================= libraries ==================
 var express = require("express");
