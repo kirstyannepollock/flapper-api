@@ -57,7 +57,7 @@ db.once("open", dbCode);
 app.use(accessControl);
 
 // routes
-app.use("/posts",routes);
+app.use("/api", routes);
 
 // catch 404 and forward - ** TODO, we have new404Error in routes
 // shd bring it out common...
