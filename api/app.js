@@ -1,4 +1,6 @@
 'use strict';
+// next up - authorisation using Passport
+// http://scottksmith.com/blog/2014/05/29/beer-locker-building-a-restful-api-with-node-passport/ 
 
 //================= libraries ==================
 var express = require("express");
@@ -8,7 +10,7 @@ var logger = require("morgan");
 
 //=============== our app =======================
 var app = express();
-var routes = require("./routes");
+var routes = require("./routes/routes-flapper");
 //===============================================
 
 //================= functions ================
@@ -41,7 +43,8 @@ app.use(jsonParser());
 
 //Mongoose
 var mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost:27017/sandbox");
+var mongoDbPath = "mongodb://localhost:27017/flapper";
+mongoose.connect(mongoDbPath);
 var db = mongoose.connection;
 
 db.on("error", function(err)
@@ -56,7 +59,7 @@ db.once("open", dbCode);
 app.use(accessControl);
 
 // routes
-app.use("/questions",routes);
+app.use("/api", routes);
 
 // catch 404 and forward - ** TODO, we have new404Error in routes
 // shd bring it out common...
@@ -74,11 +77,12 @@ app.use(function(err,request, response)
   response.json({ error: { message: err.message } });
 });
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 3001;
 
 app.listen(port, function()
 {
-  console.log("express server is listening on port " + port);
+  console.log("express server (app-flapper) is listening on port " + port);
+  console.log("Db:  " + mongoDbPath);
 });
 
 
