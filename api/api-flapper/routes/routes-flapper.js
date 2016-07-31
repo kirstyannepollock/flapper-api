@@ -1,7 +1,7 @@
 'use strict';
 var express = require("express");
 var router = express.Router();
-var postController = require("./controllers/post-controller");
+var postController = require("../controllers/post-controller");
 
 // pre-load post
 router.param("pID", postController.preLoadPost );
